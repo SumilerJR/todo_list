@@ -1,8 +1,12 @@
 <template>
+
 	<ul class="todo-main">
-		<!-- item 用props传todoObj对象到TodoItem组件里，这里需要加冒号，不然传过去的只是字符串"todoObj" -->
-		<TodoItem v-for="todoObj in todos" :key='todoObj.id' :todo="todoObj" :checkTodo="checkTodo" :deleteTodo="deleteTodo"></TodoItem>
+		<transition-group name="todo" appear>
+			<!-- item 用props传todoObj对象到TodoItem组件里，这里需要加冒号，不然传过去的只是字符串"todoObj" -->
+			<TodoItem v-for="todoObj in todos" :key='todoObj.id' :todo="todoObj"></TodoItem>
+		</transition-group>
 	</ul>
+
 </template>
 
 <script>
@@ -15,14 +19,11 @@
 		},
 		// data() {
 		// 	return {
-		// 		todos: [
-		// 			{ id: "001", title: "吃饭", done: true },
-		// 			{ id: "002", title: "睡觉", done: true },
-		// 			{ id: "003", title: "开车", done: false },
-		// 		],
+		// 		todos: JSON.parse(localStorage.getItem("todos")) || [],
 		// 	};
 		// },
-		props: ["todos", "checkTodo", "deleteTodo"],
+		// props: ["todos", "checkTodo", "deleteTodo"],//后面两个不需要经过List传给Item了，利用全局事件总线进行数据传输
+		props: ["todos"],
 	};
 </script>
 
@@ -42,5 +43,22 @@
 	border-radius: 2px;
 	padding-left: 5px;
 	margin-top: 10px;
+}
+
+.todo-enter-active {
+	animation: atguigu 0.5s linear;
+}
+
+.todo-leave-active {
+	animation: atguigu 0.5s linear reverse;
+}
+
+@keyframes atguigu {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0px);
+	}
 }
 </style>

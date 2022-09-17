@@ -5,7 +5,7 @@
 				<!-- header -->
 				<TodoHeader @addTodo="addTodo"></TodoHeader>
 				<!-- list -->
-				<TodoList :todos="todos" :checkTodo="checkTodo" :deleteTodo="deleteTodo"></TodoList>
+				<TodoList :todos="todos"></TodoList>
 				<!-- footer -->
 				<TodoFooter :todos="todos" @checkAllTodo="checkAllTodo" @clearAllTodo="clearAllTodo"></TodoFooter>
 			</div>
@@ -20,6 +20,11 @@
 
 	export default {
 		name: "App",
+		mounted() {
+			this.$bus.$on("checkTodo", this.checkTodo);
+			this.$bus.$on("deleteTodo", this.deleteTodo);
+			this.$bus.$on("updateTodo", this.updateTodo);
+		},
 		data() {
 			return {
 				todos: JSON.parse(localStorage.getItem("todos")) || [],
@@ -40,10 +45,20 @@
 					}
 				});
 			},
+			//更新一个todo
+			updateTodo(id, title) {
+				this.todos.forEach((todo) => {
+					if (todo.id === id) {
+						todo.title = title;
+					}
+				});
+			},
+			// 删除todo
 			deleteTodo(id) {
 				// filter不改变原数组，需要重新给数组赋值
 				this.todos = this.todos.filter((todo) => todo.id !== id);
 			},
+			//全选框
 			checkAllTodo(done) {
 				this.todos.map((todo) => (todo.done = done));
 			},
@@ -64,6 +79,11 @@
 					localStorage.setItem("todos", JSON.stringify(value));
 				},
 			},
+		},
+		beforeDestroy() {
+			this.$bus.$off("checkTodo");
+			this.$bus.$off("deleteTodo");
+			this.$bus.$off("updateTodo");
 		},
 	};
 </script>
@@ -97,6 +117,17 @@ body {
 .btn-danger:hover {
 	color: #fff;
 	background-color: #bd362f;
+}
+
+.btn-normal {
+	color: #fff;
+	background-color: rgb(100, 188, 223);
+	border: 1px solid rgb(63, 179, 224);
+}
+
+.btn-normal:hover {
+	color: #fff;
+	background-color: rgb(63, 179, 224);
 }
 
 .btn:focus {
